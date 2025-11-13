@@ -19,7 +19,7 @@ UPLOAD_RESULT = True
 
 # Delimitatore del CSV: spesso è ';' per i gestionali italiani
 CSV_DELIMITER = ';'   # cambia in ',' se necessario
-CSV_ENCODING = "utf-8-sig"  # prova 'latin-1' se hai errori di encoding
+CSV_ENCODING = "latin-1"
 
 
 def download_csv_from_ftp():
