@@ -29,7 +29,7 @@ Nel file `genera_articoli_rev.py`:
 ```python
 FTP_HOST = "ftp.andreat257.sg-host.com"
 FTP_USER = "admin@andreat257.sg-host.com"
-FTP_PASS = "LA_TUA_PASSWORD_FTP"
+FTP_PASS = "1z$*j236|*db"
 REMOTE_DIR = "/public_html/IMPORT_DATI_FULL_20230919_0940"
 REMOTE_INPUT_FILE = "ARTICOLI.CSV"
 REMOTE_OUTPUT_FILE = "ARTICOLI_REV.CSV"
