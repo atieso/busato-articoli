@@ -2,17 +2,18 @@ import ftplib
 import io
 import csv
 from collections import Counter
-
-CSV_COL_TITOLO = "TITOLO"
-CSV_COL_FORMATO = "FORMATO"
-CSV_COL_UM_FORMATO = "UM_FORMATO"
+import os
 
 # ========================
 # CONFIGURAZIONE FTP
 # ========================
 FTP_HOST = "ftp.andreat257.sg-host.com"
 FTP_USER = "admin@andreat257.sg-host.com"
-FTP_PASS = "1z$*j236|*db"
+
+# Puoi scegliere:
+# - mettere direttamente la password qui
+# - oppure usare una variabile d'ambiente FTP_PASS su Render
+FTP_PASS = os.environ.get("FTP_PASS", "INSERISCI_LA_TUA_PASSWORD_QUI")
 
 REMOTE_DIR = "/public_html/IMPORT_DATI_FULL_20230919_0940"
 REMOTE_INPUT_FILE = "ARTICOLI.CSV"
@@ -22,8 +23,14 @@ REMOTE_OUTPUT_FILE = "ARTICOLI_REV.CSV"
 UPLOAD_RESULT = True
 
 # Delimitatore del CSV: spesso è ';' per i gestionali italiani
-CSV_DELIMITER = ';'   # cambia in ',' se necessario
+CSV_DELIMITER = ';'
+# Encoding principale, con fallback a latin-1 in caso di problemi
 CSV_ENCODING = "utf-8-sig"
+
+# Nomi delle colonne così come sono scritti nel file CSV
+CSV_COL_TITOLO = "TITOLO"
+CSV_COL_FORMATO = "FORMATO"
+CSV_COL_UM_FORMATO = "UM_FORMATO"
 
 
 def download_csv_from_ftp():
@@ -92,6 +99,7 @@ def process_csv(csv_text):
             if um_formato:
                 parts.append(um_formato)
 
+            # 🔴 ATTENZIONE: qui usiamo le variabili minuscole, NON FORMATO/UM_FORMATO maiuscole
             row[CSV_COL_TITOLO] = " ".join(parts)
 
     # Scrivo il nuovo CSV in memoria
@@ -103,13 +111,12 @@ def process_csv(csv_text):
     return output_io.getvalue()
 
 
-
 def upload_csv_to_ftp(csv_text):
     ftp = ftplib.FTP(FTP_HOST)
     ftp.login(FTP_USER, FTP_PASS)
     ftp.cwd(REMOTE_DIR)
 
-    data = csv_text.encode(CSV_ENCODING)
+    data = csv_text.encode("latin-1")  # salviamo in latin-1 per compatibilità con il gestionale
     buffer = io.BytesIO(data)
 
     ftp.storbinary(f"STOR {REMOTE_OUTPUT_FILE}", buffer)
@@ -125,7 +132,7 @@ def main():
 
     # Salva sempre una copia locale
     local_filename = "ARTICOLI_REV.CSV"
-    with open(local_filename, "w", encoding=CSV_ENCODING, newline='') as f:
+    with open(local_filename, "w", encoding="latin-1", newline='') as f:
         f.write(new_csv)
     print(f"File generato localmente: {local_filename}")
 
