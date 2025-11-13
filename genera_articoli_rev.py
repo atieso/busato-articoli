@@ -19,7 +19,7 @@ UPLOAD_RESULT = True
 
 # Delimitatore del CSV: spesso è ';' per i gestionali italiani
 CSV_DELIMITER = ';'   # cambia in ',' se necessario
-CSV_ENCODING = "latin-1"
+CSV_ENCODING = "utf-8-sig"
 
 
 def download_csv_from_ftp():
@@ -32,7 +32,16 @@ def download_csv_from_ftp():
     ftp.quit()
 
     buffer.seek(0)
-    text = buffer.read().decode(CSV_ENCODING)
+    raw = buffer.read()
+
+    # Provo prima con l'encoding principale
+    try:
+        text = raw.decode(CSV_ENCODING)
+    except UnicodeDecodeError:
+        # Fallback tipico per file da gestionali italiani (accenti ecc.)
+        print(f"Decoding con '{CSV_ENCODING}' fallito, provo con 'latin-1'...")
+        text = raw.decode("latin-1")
+
     return text
 
 
