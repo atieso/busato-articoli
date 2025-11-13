@@ -57,26 +57,26 @@ def process_csv(csv_text):
         raise ValueError("Impossibile determinare le intestazioni del CSV (fieldnames è None).")
 
     # Verifica colonne necessarie
-    required_cols = ["Titolo", "Formato", "Um_Formato"]
+    required_cols = ["TITOLO", "FORMATO", "UM_FORMATO"]
     for col in required_cols:
         if col not in fieldnames:
             raise ValueError(f"Manca la colonna obbligatoria '{col}' nel CSV.")
 
     # Conta quante volte compare ogni titolo
-    counts = Counter(row["Titolo"] for row in rows)
+    counts = Counter(row["TITOLO"] for row in rows)
 
     # Modifica solo i Titolo duplicati
     for row in rows:
-        titolo = (row.get("Titolo") or "").strip()
+        titolo = (row.get("TITOLO") or "").strip()
         if counts[titolo] > 1:
-            formato = (row.get("Formato") or "").strip()
-            um_formato = (row.get("Um_Formato") or "").strip()
+            formato = (row.get("FORMATO") or "").strip()
+            um_formato = (row.get("UM_FORMATO") or "").strip()
 
             parts = [titolo]
             if formato:
-                parts.append(formato)
+                parts.append(FORMATO)
             if um_formato:
-                parts.append(um_formato)
+                parts.append(UM_FORMATO)
 
             row["Titolo"] = " ".join(parts)
 
