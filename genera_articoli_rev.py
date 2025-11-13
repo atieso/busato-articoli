@@ -13,7 +13,7 @@ FTP_USER = "admin@andreat257.sg-host.com"
 # Puoi scegliere:
 # - mettere direttamente la password qui
 # - oppure usare una variabile d'ambiente FTP_PASS su Render
-FTP_PASS = os.environ.get("FTP_PASS", "INSERISCI_LA_TUA_PASSWORD_QUI")
+FTP_PASS = os.environ.get("FTP_PASS", "1z$*j236|*db")
 
 REMOTE_DIR = "/public_html/IMPORT_DATI_FULL_20230919_0940"
 REMOTE_INPUT_FILE = "ARTICOLI.CSV"
