@@ -3,6 +3,10 @@ import io
 import csv
 from collections import Counter
 
+CSV_COL_TITOLO = "TITOLO"
+CSV_COL_FORMATO = "FORMATO"
+CSV_COL_UM_FORMATO = "UM_FORMATO"
+
 # ========================
 # CONFIGURAZIONE FTP
 # ========================
@@ -56,29 +60,39 @@ def process_csv(csv_text):
     if fieldnames is None:
         raise ValueError("Impossibile determinare le intestazioni del CSV (fieldnames è None).")
 
-    # Verifica colonne necessarie
-    required_cols = ["TITOLO", "FORMATO", "UM_FORMATO"]
-    for col in required_cols:
-        if col not in fieldnames:
-            raise ValueError(f"Manca la colonna obbligatoria '{col}' nel CSV.")
+    # DEBUG: stampa le intestazioni trovate nel file
+    print("Intestazioni CSV trovate:", fieldnames)
 
-    # Conta quante volte compare ogni titolo
-    counts = Counter(row["TITOLO"] for row in rows)
+    # Verifica che le colonne configurate esistano
+    required_cols = {
+        "Titolo": CSV_COL_TITOLO,
+        "Formato": CSV_COL_FORMATO,
+        "Um_Formato": CSV_COL_UM_FORMATO,
+    }
+
+    for logical_name, real_name in required_cols.items():
+        if real_name not in fieldnames:
+            raise ValueError(
+                f"Manca la colonna obbligatoria '{real_name}' (configurata per il campo logico '{logical_name}') nel CSV."
+            )
+
+    # Conta quante volte compare ogni titolo (usiamo la colonna reale)
+    counts = Counter((row.get(CSV_COL_TITOLO) or "").strip() for row in rows)
 
     # Modifica solo i Titolo duplicati
     for row in rows:
-        titolo = (row.get("TITOLO") or "").strip()
+        titolo = (row.get(CSV_COL_TITOLO) or "").strip()
         if counts[titolo] > 1:
-            formato = (row.get("FORMATO") or "").strip()
-            um_formato = (row.get("UM_FORMATO") or "").strip()
+            formato = (row.get(CSV_COL_FORMATO) or "").strip()
+            um_formato = (row.get(CSV_COL_UM_FORMATO) or "").strip()
 
             parts = [titolo]
             if formato:
-                parts.append(FORMATO)
+                parts.append(formato)
             if um_formato:
-                parts.append(UM_FORMATO)
+                parts.append(um_formato)
 
-            row["Titolo"] = " ".join(parts)
+            row[CSV_COL_TITOLO] = " ".join(parts)
 
     # Scrivo il nuovo CSV in memoria
     output_io = io.StringIO()
@@ -87,6 +101,7 @@ def process_csv(csv_text):
     writer.writerows(rows)
 
     return output_io.getvalue()
+
 
 
 def upload_csv_to_ftp(csv_text):
