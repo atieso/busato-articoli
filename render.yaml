@@ -1,0 +1,14 @@
+
+---
+
+### `render.yaml`
+
+```yaml
+services:
+  - type: cron
+    name: articoli-rev-cron
+    env: python
+    plan: free
+    schedule: "0 3 * * *"  # Esegui ogni giorno alle 03:00 (ora UTC)
+    buildCommand: ""
+    startCommand: "python genera_articoli_rev.py"
